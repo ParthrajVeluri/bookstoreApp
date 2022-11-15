@@ -1,0 +1,84 @@
+read();
+        
+        /*Table of Customers*/
+        ObservableList<Customer> customerList = FXCollections.observableList(getCustomerList());
+        TableView<Customer> customerTable = new TableView();
+        customerTable.setEditable(false);
+        customerTable.setFixedCellSize(25);
+        
+        TableColumn usernameCol = new TableColumn("Username");
+        usernameCol.setCellValueFactory(new PropertyValueFactory<>("username"));
+        TableColumn passwordCol = new TableColumn("Password");
+        passwordCol.setCellValueFactory(new PropertyValueFactory<>("password"));
+        TableColumn pointsCol = new TableColumn("Points");
+        pointsCol.setCellValueFactory(new PropertyValueFactory<>("points"));
+        
+        customerTable.setItems(customerList);
+        customerTable.getColumns().addAll(usernameCol, passwordCol, pointsCol);
+        
+        /*Footer to add more customers*/
+        Text txtUsername = new Text("Username:");
+        Text txtPassword = new Text("Password:");
+        
+        TextField txtFieldUsername = new TextField();
+        TextField txtFieldPassword = new TextField();
+        
+        //Add customer button
+        Button btnAddCustomer = new Button("Add");
+        btnAddCustomer.setMinWidth(50);
+        btnAddCustomer.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event){
+                String addUsername = txtFieldUsername.getText();
+                String addPassword = txtFieldPassword.getText();
+                
+                if(addUsername.isEmpty() || addPassword.isEmpty()){
+                    Alert alert = new Alert(AlertType.ERROR, "Please enter a valid username/password.");
+                    alert.showAndWait();
+                }
+                else{
+                    customerList.add(new Customer(addUsername, addPassword, 0, new SilverStatus()));
+                    for(Customer c : getCustomerList())
+                        System.out.println(c.getUsername() + " " + c.getPassword());
+                }
+            }
+        });
+        
+        //Delete customer button
+        Button btnDeleteCustomer = new Button("Delete");
+        btnDeleteCustomer.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event){
+                Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
+                customerList.remove(selectedCustomer);
+            }
+        });
+        
+        Button btnBack = new Button("Back");
+        
+        FlowPane footer = new FlowPane();
+        footer.setPadding(new Insets(10));
+        footer.setMargin(txtFieldUsername, new Insets(0, 20, 0, 5));
+        footer.setMargin(txtFieldPassword, new Insets(0, 20,0, 5));
+        footer.setMargin(btnAddCustomer, new Insets(0, 40, 0, 0));
+        footer.setMargin(btnDeleteCustomer, new Insets(10, 20, 0, 20));
+        footer.setMargin(btnBack, new Insets(10, 0, 0, 0));
+        footer.getChildren().addAll(txtUsername, txtFieldUsername, 
+                txtPassword, txtFieldPassword, btnAddCustomer, btnDeleteCustomer,
+                btnBack);
+        
+        /*root*/
+        VBox root = new VBox();
+        root.getChildren().addAll(customerTable, footer);
+        Scene ownerCustomersScreen = new Scene(root);
+        primaryStage.setScene(ownerCustomersScreen);
+        primaryStage.setWidth(600);
+        primaryStage.setHeight(450);
+        primaryStage.setResizable(false);
+        primaryStage.setTitle("Bookstore Application");
+        primaryStage.show();
+        
+        usernameCol.setMinWidth(primaryStage.getWidth()/3);
+        passwordCol.setMinWidth(primaryStage.getWidth()/3);
+        pointsCol.setMinWidth(primaryStage.getWidth()/3);
+        customerTable.setMaxHeight(primaryStage.getHeight()*3.0/4);
